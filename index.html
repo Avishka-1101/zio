@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zio – Track Your Work. Power Your Time.</title>
+  <meta name="description" content="Simple work-hours tracking with powerful monthly reports." />
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+
+  <!-- External Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css?v=5" />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════
+       LANDING PAGE
+       ═══════════════════════════════════════ -->
+  <section id="landing-page">
+    <nav class="landing-navbar">
+      <div class="sidebar-logo">
+        <span class="thunder-icon">⚡</span>
+        <span>Zio</span>
+      </div>
+      <div class="navbar-links">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#" onclick="showAuthPage('login')" class="nav-link">Login</a>
+        <button onclick="showAuthPage('register')" class="btn-primary">Sign Up</button>
+      </div>
+    </nav>
+
+    <header class="hero-section">
+      <div class="reveal">
+        <h1 class="hero-headline">Track Your Work.<br>Power Your Time.</h1>
+        <p class="hero-subtext">The simplest way to track your hourly productivity. Build professional reports, visualize
+          your streaks, and own your time with Zio.</p>
+        <div class="hero-btns">
+          <button onclick="showAuthPage('register')" class="btn-primary">Get Started for Free</button>
+          <button onclick="viewDemo()" class="btn-secondary">View Interactive Demo</button>
+        </div>
+      </div>
+    </header>
+
+    <section id="features" class="features-container">
+      <div style="text-align: center;" class="reveal">
+        <span class="section-tag">Why Choose Zio?</span>
+        <h2 class="feature-title">Everything you need to<br>master your schedule.</h2>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon">🚀</div>
+          <h3>Save Time</h3>
+          <p>Ditch the paper logs. Quickly record your sessions with our intuitive interface and stay focused on what
+            matters.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon">✨</div>
+          <h3>Easy to Use</h3>
+          <p>A clutter-free design ensures you can log hours in seconds, without a steep learning curve or complex
+            setups.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-3">
+          <div class="feature-icon">📄</div>
+          <h3>PDF Reports</h3>
+          <p>Export elegant, multi-language monthly reports in a single click. Ready for clients, payroll, or personal
+            records.</p>
+        </div>
+      </div>
+    </section>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════
+       AUTH OVERLAY
+       ═══════════════════════════════════════ -->
+  <div id="auth-overlay">
+    <div class="auth-card">
+      <div class="sidebar-logo" style="justify-content: center; margin-bottom: 1rem;">
+        <span class="thunder-icon">⚡</span>
+        <span>Zio</span>
+      </div>
+      <h2 id="auth-title" style="margin-bottom: 2rem;">Welcome Back</h2>
+
+      <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+        <div class="field-group" id="name-field" style="display: none;">
+          <label>Full Name</label>
+          <input type="text" id="auth-name" placeholder="John Doe">
+        </div>
+        <div class="field-group">
+          <label>Username</label>
+          <input type="text" id="auth-username" required placeholder="username">
+        </div>
+        <div class="field-group">
+          <label>Password</label>
+          <input type="password" id="auth-password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Continue</button>
+      </form>
+
+      <p style="margin-top: 1.5rem; font-size: 0.875rem; color: var(--text-grey);">
+        <span id="auth-switch-text">Don't have an account?</span>
+        <a href="#" onclick="toggleAuthMode()" style="color: var(--accent-yellow); font-weight: 600;"
+          id="auth-switch-link">Sign Up</a>
+      </p>
+      <button onclick="hideAuthPage()"
+        style="margin-top: 1rem; color: var(--text-grey); background: none; font-size: 0.8125rem;">← Back to
+        Home</button>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════
+       MAIN APP (Dashboard)
+       ═══════════════════════════════════════ -->
+  <div id="main-app">
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <div class="top-bar-logo" onclick="navigate('dashboard')">
+          <span class="thunder-icon">⚡</span>
+          <span>Zio</span>
+        </div>
+        <nav class="horizontal-nav">
+          <div class="nav-link-item active" onclick="navigate('dashboard')" id="nav-dashboard">
+            <span>📊</span> <span data-i18n="nav_dashboard">Dashboard</span>
+          </div>
+          <div class="nav-link-item" onclick="navigate('settings')" id="nav-settings">
+            <span>⚙️</span> <span data-i18n="nav_settings">Settings</span>
+          </div>
+        </nav>
+      </div>
+      <div class="top-bar-right">
+        <select class="lang-switcher" onchange="changeLanguage(this.value)" id="lang-select">
+          <option value="en">English</option>
+          <option value="it">Italiano</option>
+          <option value="si">සිංහල</option>
+          <option value="ta">தமிழ்</option>
+        </select>
+        <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Toggle Dark Mode">
+          <span id="theme-icon-light">☀️</span>
+          <span id="theme-icon-dark" style="display: none;">🌙</span>
+        </button>
+      </div>
+    </header>
+
+
+    <main id="page-area">
+
+      <!-- ▸ DASHBOARD PAGE (Monthly Sheet) -->
+      <section id="pg-dashboard" class="page active">
+
+        <div class="flex-between mb-4" style="max-width: 1000px; margin: 2rem auto 0; padding: 0 2rem;">
+          <h1 data-i18n="nav_dashboard">Dashboard</h1>
+        </div>
+
+        <div class="month-nav-container" style="padding: 1.5rem 0;">
+          <div class="month-picker">
+            <button class="nav-arrow" onclick="changeMonth(-1)"> &lt; </button>
+            <div class="current-month-display" onclick="toggleMonthDropdown()">
+              <span id="display-month-name">September 2025</span>
+              <div id="month-dropdown" class="month-dropdown">
+                <!-- JS will populate -->
+              </div>
+            </div>
+            <button class="nav-arrow" onclick="changeMonth(1)"> &gt; </button>
+            <button onclick="jumpToToday()" class="btn-secondary"
+              style="padding: 6px 14px; font-size: 0.8125rem; margin-left: 1rem;">Go to Today</button>
+          </div>
+        </div>
+
+        <div class="worksheet-container">
+
+          <table class="worksheet-table">
+            <thead>
+              <tr>
+                <th data-i18n="th_day">Day</th>
+                <th data-i18n="th_date">Date</th>
+                <th data-i18n="th_details">Work Details</th>
+                <th data-i18n="th_hours">Total Hours</th>
+                <th style="text-align: right;" data-i18n="th_action">Action</th>
+              </tr>
+            </thead>
+            <tbody id="worksheet-body">
+              <!-- JS will populate -->
+            </tbody>
+          </table>
+
+          <div class="monthly-summary">
+            <div class="total-label">
+              Total Hours This Month: <span class="total-value" id="monthly-total-value">0.00</span>
+            </div>
+            <button onclick="downloadPDF()" class="btn-primary">Download PDF</button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ▸ TIMER PAGE -->
+      <section id="pg-timer" class="page">
+        <h1 class="mb-2">Timer</h1>
+        <div class="timer-container">
+          <div class="timer-display" id="timer-display">00:00:00</div>
+
+          <div class="form-card" style="margin: 0 auto 2rem; max-width: 400px; text-align: left;">
+            <div class="field-group">
+              <label>Project Name</label>
+              <input type="text" id="timer-project" placeholder="e.g. Design System">
+            </div>
+            <div class="field-group">
+              <label>Notes</label>
+              <textarea id="timer-notes" rows="2" placeholder="What are you working on?"></textarea>
+            </div>
+          </div>
+
+          <div class="timer-controls">
+            <button id="btn-timer-start" class="btn-primary" onclick="startTimer()">Start Session</button>
+            <button id="btn-timer-pause" class="btn-secondary" onclick="pauseTimer()"
+              style="display: none;">Pause</button>
+            <button id="btn-timer-stop" class="btn-danger" onclick="stopTimer()" style="display: none;">Stop &
+              Save</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ▸ MANUAL ENTRY PAGE -->
+      <section id="pg-manual" class="page">
+        <h1 class="mb-2">Manual Entry</h1>
+        <div class="form-card">
+          <form onsubmit="handleManualSubmit(event)">
+            <div class="form-grid">
+              <div class="field-group">
+                <label>Date</label>
+                <input type="date" id="m-date" required>
+              </div>
+              <div class="field-group">
+                <label>Location / Project</label>
+                <input type="text" id="m-project" required placeholder="e.g. Client X">
+              </div>
+              <div class="field-group">
+                <label>Start Time</label>
+                <input type="time" id="m-start" required>
+              </div>
+              <div class="field-group">
+                <label>End Time</label>
+                <input type="time" id="m-end" required>
+              </div>
+              <div class="field-group full-width">
+                <label>Notes</label>
+                <textarea id="m-notes" rows="3" placeholder="Session details..."></textarea>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="submit" class="btn-primary">Save Entry</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ▸ HISTORY PAGE -->
+      <section id="pg-history" class="page">
+        <div class="flex-between mb-2">
+          <h1>Work History</h1>
+          <button onclick="navigate('manual')" class="btn-primary">+ New Entry</button>
+        </div>
+        <div class="table-card">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Project</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Duration</th>
+                <th>Notes</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="history-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <!-- ▸ CALENDAR PAGE -->
+      <section id="pg-calendar" class="page">
+        <h1 class="mb-2">Calendar View</h1>
+        <div class="calendar-grid" id="calendar-grid">
+          <!-- JS will render days -->
+        </div>
+      </section>
+
+      <!-- ▸ SETTINGS PAGE -->
+      <section id="pg-settings" class="page">
+        <h1 class="mb-2">Settings</h1>
+        <div class="form-card">
+          <div class="field-group">
+            <label>Profile Name</label>
+            <input type="text" id="s-name">
+          </div>
+          <div class="field-group">
+            <label>Company Name</label>
+            <input type="text" id="s-company" placeholder="e.g. Acme Corp">
+          </div>
+          <div class="field-group" style="display: flex; align-items: center; gap: 1rem;">
+            <input type="checkbox" id="s-show-company" style="width: auto;">
+            <label style="margin-bottom: 0;">Include Company Name in PDF Report</label>
+          </div>
+          <div class="field-group">
+            <label>Time Zone</label>
+            <select id="s-timezone">
+              <option value="UTC">UTC (Coordinated Universal Time)</option>
+              <option value="GMT">GMT (Greenwich Mean Time)</option>
+              <!-- More can be added -->
+            </select>
+          </div>
+          <div class="field-group" style="display: flex; align-items: center; gap: 1rem;">
+            <input type="checkbox" id="s-dark-mode" style="width: auto;">
+            <label style="margin-bottom: 0;">Enable Dark Mode (Coming Soon)</label>
+          </div>
+          <button onclick="saveSettings()" class="btn-primary" style="width: 100%; justify-content: center;">Save All Settings</button>
+
+          <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-grey);">
+            <p style="font-size: 0.8125rem; color: var(--text-grey); margin-bottom: 1rem;">Finished with your session?</p>
+            <button onclick="handleLogout()" class="btn-danger" style="width: 100%; background: #fef2f2; border: 1.5px solid #fee2e2; color: #ef4444; justify-content: center;">Logout from Zio</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+
+  <!-- Toast Notification -->
+  <div id="toast"></div>
+
+  <div class="mobile-bottom-nav">
+    <div class="mobile-nav-item active" onclick="navigate('dashboard')" id="m-nav-dashboard">
+      <span>📊</span>
+      <span data-i18n="nav_dashboard">Dashboard</span>
+    </div>
+    <div class="mobile-nav-item" onclick="navigate('settings')" id="m-nav-settings">
+      <span>⚙️</span>
+      <span data-i18n="nav_settings">Settings</span>
+    </div>
+  </div>
+
+  <script src="app.js?v=5"></script>
+</body>
+
+</html>
