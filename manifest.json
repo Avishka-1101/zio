@@ -1,0 +1,16 @@
+{
+  "name": "Zio Smart Work Tracker",
+  "short_name": "Zio",
+  "description": "Smart work-hours tracking that stays on your device.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#FFD84D",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2972/2972531.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
