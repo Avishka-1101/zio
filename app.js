@@ -21,7 +21,8 @@ const translations = {
     quick_title: "Quick Entry", btn_add: "+ Add Session",
     btn_add_row: "+ Add New Row",
     no_sessions: "No sessions logged for this month.", toast_saved: "Session logged!",
-    pdf_report_title: "Work Report", pdf_company: "Company", pdf_period: "Period", pdf_name: "Name"
+    pdf_report_title: "Work Report", pdf_company: "Company", pdf_period: "Period", pdf_name: "Name",
+    db_status: "Strictly On-Device Storage (Private)"
   },
   it: {
     nav_dashboard: "Dashboard", nav_timer: "Ore di Lavoro", nav_reports: "Rapporto Mensile", nav_settings: "Impostazioni",
@@ -30,7 +31,8 @@ const translations = {
     quick_title: "Inserimento Rapido", btn_add: "+ Aggiungi Sessione",
     btn_add_row: "+ Aggiungi Riga",
     no_sessions: "Nessuna sessione registrata per questo mese.", toast_saved: "Sessione salvata!",
-    pdf_report_title: "Rapporto di Lavoro", pdf_company: "Azienda", pdf_period: "Periodo", pdf_name: "Nome"
+    pdf_report_title: "Rapporto di Lavoro", pdf_company: "Azienda", pdf_period: "Periodo", pdf_name: "Nome",
+    db_status: "Memoria Interna Dispositivo (AUTO)"
   },
   si: {
     nav_dashboard: "දර්ශක පුවරුව", nav_timer: "වැඩ කරන පැය", nav_reports: "මාසික වාර්තාව", nav_settings: "සැකසුම්",
@@ -39,7 +41,8 @@ const translations = {
     quick_title: "ඉක්මන් ඇතුළත් කිරීම", btn_add: "+ ඇතුළත් කරන්න",
     btn_add_row: "+ පේළියක් එක් කරන්න",
     no_sessions: "මෙම මාසය සඳහා සටහන් කිසිවක් නැත.", toast_saved: "සටහන් කරන ලදී!",
-    pdf_report_title: "වැඩ වාර්තාව", pdf_company: "ආයතනය", pdf_period: "කාල සීමාව", pdf_name: "නම"
+    pdf_report_title: "වැඩ වාර්තාව", pdf_company: "ආයතනය", pdf_period: "කාල සීමාව", pdf_name: "නම",
+    db_status: "ඔබේම උපකරණය මත පමණක් දත්ත ගබඩා වේ (පුද්ගලිකයි)"
   },
   ta: {
     nav_dashboard: "டாஷ்போர்டு", nav_timer: "வேலை நேரம்", nav_reports: "மாதாந்திர அறிக்கை", nav_settings: "அமைப்புகள்",
@@ -48,7 +51,8 @@ const translations = {
     quick_title: "விரைவான உள்ளீடு", btn_add: "+ சேர்க்க",
     btn_add_row: "+ வரிசையைச் சேர்க்கவும்",
     no_sessions: "இந்த மாதத்தில் அமர்வுகள் எதுவும் இல்லை.", toast_saved: "சேமிக்கப்பட்டது!",
-    pdf_report_title: "வேலை அறிக்கை", pdf_company: "நிறுவனம்", pdf_period: "காலம்", pdf_name: "பெயர்"
+    pdf_report_title: "வேலை அறிக்கை", pdf_company: "நிறுவனம்", pdf_period: "காலம்", pdf_name: "பெயர்",
+    db_status: "உள் [சாதன] சேமிப்பு (AUTO)"
   }
 };
 
@@ -726,8 +730,75 @@ function loadSettings() {
   document.getElementById('s-show-company').checked = !!currentUser.showCompany;
 }
 
+/* ================================================================
+   DATA PERSISTENCE (Export/Import)
+   =============================================================== */
+
+function exportData() {
+  const allData = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('zio_')) {
+      allData[key] = localStorage.getItem(key);
+    }
+  }
+
+  const blob = new Blob([JSON.stringify(allData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+
+  const dateStr = new Date().toISOString().split('T')[0];
+  a.href = url;
+  a.download = `Zio_Data_Backup_${dateStr}.json`;
+  a.click();
+  
+  URL.revokeObjectURL(url);
+  showToast('Data Exported to Device!');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      
+      if (!data['zio_users']) {
+        throw new Error('Invalid Zio data file.');
+      }
+
+      Object.keys(data).forEach(key => {
+        if (key.startsWith('zio_')) {
+          localStorage.setItem(key, data[key]);
+        }
+      });
+
+      showToast('Data Restored Successfully!', 'success');
+      alert('Application data restored. The app will reload now.');
+      window.location.reload(); 
+    } catch (err) {
+      showToast('Error: Invalid file format.', 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
 // ── Boot ──
 window.onload = () => {
+  // Register Service Worker for PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(err => console.log("SW registration failed", err));
+  }
+
+  // Request Storage Persistence
+  if (navigator.storage && navigator.storage.persist) {
+    navigator.storage.persist().then(granted => {
+      if (granted) console.log("Storage will not be cleared except by explicit user action");
+    });
+  }
+
   const active = localStorage.getItem('zio_active_user');
   if (active) login(JSON.parse(active));
 
