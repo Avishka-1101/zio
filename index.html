@@ -11,6 +11,9 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap"
     rel="stylesheet" />
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#FFD84D">
 
   <!-- External Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -329,6 +332,18 @@
           </div>
           <button onclick="saveSettings()" class="btn-primary" style="width: 100%; justify-content: center;">Save All Settings</button>
 
+          <!-- Automated Database Connectivity Indicator -->
+          <div style="margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-grey); text-align: center;">
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: var(--border-grey); padding: 8px 16px; border-radius: 50px; font-size: 0.8125rem;">
+              <span style="color: #22C55E; font-size: 0.75rem;">●</span>
+              <span style="font-weight: 600; color: var(--text-dark);">DATABASE:</span>
+              <span style="color: var(--text-grey);" data-i18n="db_status">Internal [Device] Storage (AUTO)</span>
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-grey); margin-top: 0.75rem; line-height: 1.4;">
+               No cloud sync. All work logs are stored permanently on this computer/phone.
+            </p>
+          </div>
+          
           <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-grey);">
             <p style="font-size: 0.8125rem; color: var(--text-grey); margin-bottom: 1rem;">Finished with your session?</p>
             <button onclick="handleLogout()" class="btn-danger" style="width: 100%; background: #fef2f2; border: 1.5px solid #fee2e2; color: #ef4444; justify-content: center;">Logout from Zio</button>
